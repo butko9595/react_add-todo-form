@@ -20,7 +20,8 @@ export const App: React.FC = () => {
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
 
-    const cleanedValue = value.replace(/[^a-zA-Zа-яА-Я0-9 .]/g, '');
+    // Разрешены только буквы, цифры и пробелы
+    const cleanedValue = value.replace(/[^a-zA-Zа-яА-Я0-9 ]/g, '');
 
     setTitle(cleanedValue);
 
@@ -58,14 +59,22 @@ export const App: React.FC = () => {
 
     const maxId = todos.length ? Math.max(...todos.map(todo => todo.id)) : 0;
 
-    const user = usersFromServer.find(u => u.id === Number(userId)) as User;
+    const selectedUser = usersFromServer.find(
+      user => user.id === Number(userId),
+    );
+
+    if (!selectedUser) {
+      setUserError(true);
+
+      return;
+    }
 
     const newTodo: Todo = {
       id: maxId + 1,
       title: title.trim(),
       userId: Number(userId),
       completed: false,
-      user,
+      user: selectedUser,
     };
 
     setTodos([...todos, newTodo]);
